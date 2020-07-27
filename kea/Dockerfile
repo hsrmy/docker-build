@@ -1,6 +1,5 @@
 FROM alpine:latest
-LABEL maintainer="hsrmy@emradc.xyz"
-EXPOSE 67/udp
+LABEL maintainer="hsrmy <hsrmy@emradc.xyz>"
 
 ENV VERSION=Kea-1.7.9
 
@@ -17,3 +16,9 @@ RUN apk update && \
     rm -rf /tmp/* && \
     apk del autoconf automake && \
     rm -rf /var/cache/apk/*
+
+COPY ./entrypoint.sh /
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 67/udp
+ENTRYPOINT ["/entrypoint.sh"]    

@@ -11,7 +11,7 @@ RUN apk update && \
     cd kea-${VERSION} && \
     autoreconf --install && \
     ./configure --prefix=/usr --with-mysql --with-pgsql && \
-    make && \
+    make -j 8 && \
     make install && \
     rm -rf /tmp/* && \
     apk del autoconf automake && \
@@ -21,4 +21,4 @@ COPY ./entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 67/udp
-ENTRYPOINT ["/entrypoint.sh"]    
+ENTRYPOINT ["/entrypoint.sh"]

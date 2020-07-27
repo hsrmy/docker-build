@@ -1,12 +1,12 @@
 FROM alpine:latest
 LABEL maintainer="hsrmy <hsrmy@emradc.xyz>"
 
-ENV VERSION=Kea-1.7.9
+ENV VERSION=1.6.2
 
 RUN apk update && \
     apk add wget make gcc g++ autoconf automake libtool boost-dev log4cplus-dev mysql-dev postgresql-dev && \
     cd /tmp && \
-    wget https://github.com/isc-projects/kea/archive/${VERSION}.tar.gz && \
+    wget https://downloads.isc.org/isc/kea/1.6.2/kea-1.6.2.tar.gz && \
     tar -xvf ${VERSION}.tar.gz && \
     cd kea-${VERSION} && \
     autoreconf --install && \

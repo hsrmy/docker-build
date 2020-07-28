@@ -7,7 +7,7 @@ RUN apk update && \
     apk add wget make gcc g++ autoconf automake libtool boost-dev log4cplus-dev mysql-dev postgresql-dev && \
     cd /tmp && \
     wget https://downloads.isc.org/isc/kea/1.6.2/kea-1.6.2.tar.gz && \
-    tar -xvf ${VERSION}.tar.gz && \
+    tar -xvf kea-${VERSION}.tar.gz && \
     cd kea-${VERSION} && \
     autoreconf --install && \
     ./configure --prefix=/usr --with-mysql --with-pgsql && \
@@ -20,5 +20,6 @@ RUN apk update && \
 COPY ./entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 
+ENV TZ Asia/Tokyo
 EXPOSE 67/udp
 ENTRYPOINT ["/entrypoint.sh"]

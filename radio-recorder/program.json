@@ -1,0 +1,138 @@
+{
+    "info": {
+        "0": "月曜日",
+        "1": "火曜日",
+        "2": "水曜日",
+        "3": "木曜日",
+        "4": "金曜日",
+        "5": "土曜日",
+        "6": "日曜日",
+        "description": {
+            "title": "ラジオ録音用時刻表",
+            "cation": "24:00〜29:00の間は, 次の日の0:00〜5:00にする",
+            "name": "番組名",
+            "station": "放送局。超!A&G+はagqr, radiko対象局はその局のコード(TOKYO FMはFMT, 文化放送はQRR, ...)",
+            "start": "番組録音開始時刻(番組開始時刻の1分前)",
+            "minute": "放送時間(秒)",
+            "key": "スクリプト回すとき時に使用"
+        }
+    },
+    "0": [
+        {
+            "name": "思春期が終わりません！！",
+            "station": "agqr",
+            "start": "01:29",
+            "minute": 1860,
+            "key": "shisyunki"
+        },
+        {
+            "name": "水樹奈々のMの世界",
+            "station": "FMT",
+            "start": "20:59",
+            "minute": 1920,
+            "key": "nana_m"
+        }
+    ],
+    "1": [
+        {
+            "name": "Pyxisの夜空の下 de Meeting(月曜日)",
+            "station": "agqr",
+            "start": "00:20",
+            "minute": 1500,
+            "key": "pyxis_mon"
+        },
+        {
+            "name": "TrySailのTRYangle harmony",
+            "station": "agqr",
+            "start": "20:59",
+            "minute": 1860,
+            "key": "try"
+        },
+        {
+            "name": "上田麗奈のひみつばこ",
+            "station": "agqr",
+            "start": "21:29",
+            "minute": 1860,
+            "key": "reina"
+        },
+        {
+            "name": "セブン-イレブンpresents佐倉としたい大西",
+            "station": "agqr",
+            "start": "23:29",
+            "minute": 1860,
+            "key": "roshitai"
+        }
+    ],
+    "2": [
+        {
+            "name": "Pyxisの夜空の下 de Meeting(火曜日)",
+            "station": "agqr",
+            "start": "00:20",
+            "minute": 1500,
+            "key": "pyxis_tue"
+        },
+        {
+            "name": "洲崎西",
+            "station": "agqr",
+            "start": "00:59",
+            "minute": 1860,
+            "key": "suzakinishi"
+        },
+        {
+            "name": "田中美海のかもん！みなはうす",
+            "station": "agqr",
+            "start": "01:29",
+            "minute": 1860,
+            "key": "comeon"
+        }
+    ],
+    "3": [
+        {
+            "name": "Pyxisの夜空の下 de Meeting(水曜日)",
+            "station": "agqr",
+            "start": "00:20",
+            "minute": 1500,
+            "key": "pyxis_wed"
+        }
+    ],
+    "4": [
+        {
+            "name": "Pyxisの夜空の下 de Meeting(木曜日)",
+            "station": "agqr",
+            "start": "00:20",
+            "minute": 1500,
+            "key": "pyxis_thu"
+        }
+    ],
+    "5": [],
+    "6": [
+        {
+            "name": "MOMO・SORA・SHIINA Talking Box",
+            "station": "QRR",
+            "start": "01:59",
+            "minute": 1920,
+            "key": "mss"
+        },
+        {
+            "name": "飛べっ！石飛！",
+            "station": "agqr",
+            "start": "17:29",
+            "minute": 1860,
+            "key": "ishitobi"
+        },
+        {
+            "name": "ワシザキスタイル＊ヨシオカモード",
+            "station": "agqr",
+            "start": "17:59",
+            "minute": 1860,
+            "key": "mode"
+        },
+        {
+            "name": "水樹奈々 スマイルギャング",
+            "station": "QRR",
+            "start": "23:29",
+            "minute": 1920,
+            "key": "msg"
+        }
+    ]
+}

@@ -5,15 +5,13 @@ RUN apk --update --no-cache add git && \
     go get github.com/yyoshiki41/radigo/cmd/radigo
 
 # 実際動かす用
-FROM alpine:latest
+FROM python:3.8-alpine
 ENV TZ "Asia/Tokyo"
 
 RUN apk --update --no-cache add ffmpeg rtmpdump tzdata
 COPY --from=build /go/bin/radigo /usr/bin/radigo
 COPY ./program.json /usr/local/share/ 
-# TODO: program.jsonの中身を解析してcront設定項目を吐き出すものを書く
-# COPY ./something_command /usr/local/something_command
+COPY ./cron_output.py /usr/local/bin
 
 RUN mkdir -p /var/spool/cron/crontabs && \
-    # something_command > /var/spool/cron/crontabs/root
-    echo "* * * * * echo 'hello world'" > /var/spool/cron/crontabs/root 
+    /usr/local/bin/python /usr/local/bin/cron_output.py > /var/spool/cron/crontabs/root

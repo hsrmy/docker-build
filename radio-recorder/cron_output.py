@@ -6,10 +6,10 @@ from datetime import datetime, timedelta
 def output_agqr(data, dow):
     rtmp_url = "rtmp://fms-base1.mitene.ad.jp/agqr/aandg1"
     rtmpdump = "/usr/bin/rtmpdump -v -r {} -m 60 -B {} -o -".format(rtmp_url, data["minute"])
-    ffmpeg = "/usr/bin/ffmpeg -y -i - /output/{}-$(date +'%Y%m%d').mp4".format(data["name"])
+    ffmpeg = "/usr/bin/ffmpeg -y -i - \"/output/{}-$(date +'%Y%m%d').mp4\"".format(data["name"])
     name = data["name"]
     start = datetime.strptime(data["start"], "%H:%M")
-    output_str = "{} {} * * {} {}|{}".format(start.minute, start.hour, dow+1, rtmpdump, ffmpeg)
+    output_str = "{} {} * * {} {}|{} > /dev/null 2>&1".format(start.minute, start.hour, dow+1, rtmpdump, ffmpeg)
     print(output_str)
 
 def output_radiko(data, dow):

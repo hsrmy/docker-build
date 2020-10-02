@@ -19,13 +19,6 @@
     },
     "0": [
         {
-            "name": "思春期が終わりません！！",
-            "station": "agqr",
-            "start": "01:29",
-            "minute": 1860,
-            "key": "shisyunki"
-        },
-        {
             "name": "水樹奈々のMの世界",
             "station": "FMT",
             "start": "20:59",
@@ -77,13 +70,6 @@
             "start": "00:59",
             "minute": 1860,
             "key": "suzakinishi"
-        },
-        {
-            "name": "田中美海のかもん！みなはうす",
-            "station": "agqr",
-            "start": "01:29",
-            "minute": 1860,
-            "key": "comeon"
         }
     ],
     "3": [
@@ -102,9 +88,24 @@
             "start": "00:20",
             "minute": 1500,
             "key": "pyxis_thu"
+        },
+        {
+            "name": "思春期が終わりません！！",
+            "station": "agqr",
+            "start": "23:29",
+            "minute": 1860,
+            "key": "shisyunki"
         }
     ],
-    "5": [],
+    "5": [
+        {
+            "name": "田中美海のかもん！みなはうす",
+            "station": "agqr",
+            "start": "23:59",
+            "minute": 1860,
+            "key": "comeon"
+        }
+    ],
     "6": [
         {
             "name": "MOMO・SORA・SHIINA Talking Box",
@@ -114,16 +115,9 @@
             "key": "mss"
         },
         {
-            "name": "飛べっ！石飛！",
-            "station": "agqr",
-            "start": "17:29",
-            "minute": 1860,
-            "key": "ishitobi"
-        },
-        {
             "name": "ワシザキスタイル＊ヨシオカモード",
             "station": "agqr",
-            "start": "17:59",
+            "start": "18:29",
             "minute": 1860,
             "key": "mode"
         },

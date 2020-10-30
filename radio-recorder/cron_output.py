@@ -9,13 +9,20 @@ def output_agqr(data, dow):
     ffmpeg = "/usr/bin/ffmpeg -y -i - \"/output/{}-$(date +'%Y%m%d').mp4\"".format(data["name"])
     name = data["name"]
     start = datetime.strptime(data["start"], "%H:%M")
-    output_str = "{} {} * * {} {}|{} > /dev/null 2>&1".format(start.minute, start.hour, dow+1, rtmpdump, ffmpeg)
+    output_str = "{} {} * * {} {}|{} > /dev/null 2>&1".format(start.minute, start.hour, dow, rtmpdump, ffmpeg)
     print(output_str)
 
 def output_radiko(data, dow):
-    radigo = "/usr/bin/radigo rec-live"
+    radigo = "/usr/bin/radigo rec"
     start = datetime.strptime(data["start"], "%H:%M")
-    output_str = "{} {} * * {} {} -id={} -t={} -o=mp3".format(start.minute, start.hour, dow+1, radigo, data["station"], data["minute"])
+    time = start + timedelta(seconds=data["minute"])
+    # startにminuteの分timedeltaで加算
+    # 加算した日時にradigo起動で-t=startの日時
+    if start.day == time.day:
+        output_str = "{} {} * * {} {} -id={} -s=$(date +'%Y%m%d'){} -o=mp3".format(time.minute, time.hour, dow, radigo, data["station"], start.strftime("%H%M%S"))
+    else:
+        output_str = "{} {} * * {} {} -id={} -s=$(date +'%Y%m%d' -d '-1 day'){} -o=mp3".format(time.minute, time.hour, dow+1, radigo, data["station"], start.strftime("%H%M%S"))
+
     print(output_str)
 
 if __name__ == '__main__':

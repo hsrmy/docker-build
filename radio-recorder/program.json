@@ -1,12 +1,12 @@
 {
     "info": {
-        "0": "月曜日",
-        "1": "火曜日",
-        "2": "水曜日",
-        "3": "木曜日",
-        "4": "金曜日",
-        "5": "土曜日",
-        "6": "日曜日",
+        "0": "日曜日",
+        "1": "月曜日",
+        "2": "火曜日",
+        "3": "水曜日",
+        "4": "木曜日",
+        "5": "金曜日",
+        "6": "土曜日",
         "description": {
             "title": "ラジオ録音用時刻表",
             "cation": "24:00〜29:00の間は, 次の日の0:00〜5:00にする",
@@ -19,14 +19,37 @@
     },
     "0": [
         {
-            "name": "水樹奈々のMの世界",
-            "station": "FMT",
-            "start": "20:59",
-            "minute": 1920,
-            "key": "nana_m"
+            "name": "MOMO・SORA・SHIINA Talking Box",
+            "station": "QRR",
+            "start": "02:00",
+            "minute": 1830,
+            "key": "mss"
+        },
+        {
+            "name": "ワシザキスタイル＊ヨシオカモード",
+            "station": "agqr",
+            "start": "18:29",
+            "minute": 1860,
+            "key": "mode"
+        },
+        {
+            "name": "水樹奈々 スマイルギャング",
+            "station": "QRR",
+            "start": "23:30",
+            "minute": 1830,
+            "key": "msg"
         }
     ],
     "1": [
+        {
+            "name": "水樹奈々のMの世界",
+            "station": "FMT",
+            "start": "21:00",
+            "minute": 1830,
+            "key": "nana_m"
+        }
+    ],
+    "2": [
         {
             "name": "Pyxisの夜空の下 de Meeting(月曜日)",
             "station": "agqr",
@@ -56,7 +79,7 @@
             "key": "roshitai"
         }
     ],
-    "2": [
+    "3": [
         {
             "name": "Pyxisの夜空の下 de Meeting(火曜日)",
             "station": "agqr",
@@ -72,7 +95,7 @@
             "key": "suzakinishi"
         }
     ],
-    "3": [
+    "4": [
         {
             "name": "Pyxisの夜空の下 de Meeting(水曜日)",
             "station": "agqr",
@@ -81,7 +104,7 @@
             "key": "pyxis_wed"
         }
     ],
-    "4": [
+    "5": [
         {
             "name": "Pyxisの夜空の下 de Meeting(木曜日)",
             "station": "agqr",
@@ -97,36 +120,13 @@
             "key": "shisyunki"
         }
     ],
-    "5": [
+    "6": [
         {
             "name": "田中美海のかもん！みなはうす",
             "station": "agqr",
             "start": "23:59",
             "minute": 1860,
             "key": "comeon"
-        }
-    ],
-    "6": [
-        {
-            "name": "MOMO・SORA・SHIINA Talking Box",
-            "station": "QRR",
-            "start": "01:59",
-            "minute": 1920,
-            "key": "mss"
-        },
-        {
-            "name": "ワシザキスタイル＊ヨシオカモード",
-            "station": "agqr",
-            "start": "18:29",
-            "minute": 1860,
-            "key": "mode"
-        },
-        {
-            "name": "水樹奈々 スマイルギャング",
-            "station": "QRR",
-            "start": "23:29",
-            "minute": 1920,
-            "key": "msg"
         }
     ]
 }

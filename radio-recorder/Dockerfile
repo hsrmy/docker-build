@@ -8,7 +8,7 @@ RUN apk --update --no-cache add git && \
 FROM python:3.8-alpine
 ENV TZ "Asia/Tokyo"
 
-RUN apk --update --no-cache add ffmpeg rtmpdump tzdata
+RUN apk --update --no-cache add ffmpeg rtmpdump tzdata coreutils
 COPY --from=build /go/bin/radigo /usr/bin/radigo
 COPY ./program.json /usr/local/share/ 
 COPY ./cron_output.py /usr/local/bin

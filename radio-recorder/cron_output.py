@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 def output_agqr(data, dow):
     rtmp_url = "rtmp://fms-base1.mitene.ad.jp/agqr/aandg1"
-    rtmpdump = "/usr/bin/rtmpdump -v -r {} -m 60 -B {} -o -".format(rtmp_url, data["minute"])
+    rtmpdump = "/usr/bin/rtmpdump -v -r {} -m 60 -B {} -o -".format(rtmp_url, data["second"])
     ffmpeg = "/usr/bin/ffmpeg -y -i - \"/output/{}-$(date +'%Y%m%d').mp4\"".format(data["name"])
     name = data["name"]
     start = datetime.strptime(data["start"], "%H:%M")
@@ -15,9 +15,7 @@ def output_agqr(data, dow):
 def output_radiko(data, dow):
     radigo = "/usr/bin/radigo rec"
     start = datetime.strptime(data["start"], "%H:%M")
-    time = start + timedelta(seconds=data["minute"])
-    # startにminuteの分timedeltaで加算
-    # 加算した日時にradigo起動で-t=startの日時
+    time = start + timedelta(seconds=data["second"])
     if start.day == time.day:
         output_str = "{} {} * * {} {} -id={} -s=$(date +'%Y%m%d'){} -o=mp3".format(time.minute, time.hour, dow, radigo, data["station"], start.strftime("%H%M%S"))
     else:

@@ -4,7 +4,7 @@ import json
 from datetime import datetime, timedelta
 
 def output_agqr(data, dow):
-    rtmp_url = "rtmp://fms-base1.mitene.ad.jp/agqr/aandg1"
+    rtmp_url = "rtmp://fms-base2.mitene.ad.jp/agqr/aandg1"
     rtmpdump = "/usr/bin/rtmpdump -v -r {} -m 60 -B {} -o -".format(rtmp_url, data["second"])
     ffmpeg = "/usr/bin/ffmpeg -y -i - \"/output/{}-$(date +'%Y%m%d').mp4\"".format(data["name"])
     name = data["name"]

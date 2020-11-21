@@ -4,12 +4,11 @@ import json
 from datetime import datetime, timedelta
 
 def output_agqr(data, dow):
-    rtmp_url = "rtmp://fms-base2.mitene.ad.jp/agqr/aandg1"
-    rtmpdump = "/usr/bin/rtmpdump -v -r {} -m 60 -B {} -o -".format(rtmp_url, data["second"])
-    ffmpeg = "/usr/bin/ffmpeg -y -i - \"/output/{}-$(date +'%Y%m%d').mp4\"".format(data["name"])
+    url = "https://fms2.uniqueradio.jp/agqr10/aandg1.m3u8"
+    ffmpeg = "/usr/bin/ffmpeg -y -i {} -t {} -loglevel warning \"/output/{}-$(date +'%Y%m%d').mp4\"".format(url, data["second"], data["name"])
     name = data["name"]
     start = datetime.strptime(data["start"], "%H:%M")
-    output_str = "{} {} * * {} {}|{} > /dev/null 2>&1".format(start.minute, start.hour, dow, rtmpdump, ffmpeg)
+    output_str = "{} {} * * {} {} > /dev/null 2>&1".format(start.minute, start.hour, dow, ffmpeg)
     print(output_str)
 
 def output_radiko(data, dow):

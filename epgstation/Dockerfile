@@ -10,5 +10,9 @@ RUN apk --update --no-cache add wget openssl tzdata && \
     echo "Asia/Tokyo" > /etc/timezone && \
     apk del tzdata
 
+COPY --from=hsrmy/ffmpeg /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
+COPY --from=hsrmy/ffmpeg /usr/local/bin/ffplay /usr/local/bin/ffplay
+COPY --from=hsrmy/ffmpeg /usr/local/bin/ffprobe /usr/local/bin/ffprobe
+
 EXPOSE 8888
 WORKDIR /app

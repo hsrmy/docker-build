@@ -1,0 +1,57 @@
+FROM ubuntu:focal as build
+
+## FFMPEGのバージョン
+ARG VERSION=4.3.1
+ARG BUILD_PKGS="build-essential ca-certificates cmake curl frei0r-plugins-dev flite1-dev git ladspa-sdk libaom-dev libass-dev \
+    libavc1394-dev libbluray-dev libbs2b-dev libcaca-dev libcdio-cdda-dev libcdio-dev libcdio-paranoia-dev libcdparanoia-dev \
+    libchromaprint-dev libcodec2-dev libdc1394-dev libdrm-dev libfontconfig-dev libfreetype-dev libfribidi-dev libgme-dev \
+    libgl-dev libgsm1-dev libgnutls28-dev libiec61883-dev libjack-dev liblilv-dev libmp3lame-dev libmysofa-dev \
+    libomxil-bellagio-dev libopenal-dev libopengl-dev libopenjp2-7-dev libopenmpt-dev libopus-dev libpulse-dev librsvg2-dev \
+    librubberband-dev libsdl2-dev libshine-dev libsnappy-dev libsoxr-dev libspeex-dev libssh-dev libtheora-dev libtwolame-dev \
+    libva-dev libvdpau-dev libvidstab-dev libvorbis-dev libvpx-dev libwavpack-dev libwebp-dev libx264-dev libx265-dev \
+    libxml2-dev libxvidcore-dev libczmq-dev libzvbi-dev nasm pkg-config"
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get -y --no-install-recommends install ${BUILD_PKGS}
+
+### for --enable-avisynth
+WORKDIR /tmp/AviSynthPlus
+RUN curl -fsSL https://github.com/AviSynth/AviSynthPlus/archive/v3.6.1.tar.gz | tar -xz --strip-components=1 && \
+    mkdir avisynth-build && cd avisynth-build && \
+    cmake -DCMAKE_BUILD_TYPE=Release ../ -DHEADERS_ONLY:bool=on && \
+    make install
+
+WORKDIR /tmp/nvcodec
+RUN git clone https://git.videolan.org/git/ffmpeg/nv-codec-headers.git . && \
+    make -j $(nproc) install
+
+## ffmpegのコンパイル
+RUN curl -fsSL https://ffmpeg.org/releases/ffmpeg-${VERSION}.tar.gz | tar -xz --strip-components=1 && \
+    curl -fsSL https://github.com/GPUOpen-LibrariesAndSDKs/AMF/archive/v1.4.18.tar.gz | tar -xz --strip-components=1 && \
+    mkdir -p /usr/local/include/AMF && \
+    cp -r amf/public/include/* /usr/local/include/AMF && \
+    ./configure --prefix=/usr/local --bindir="/usr/local/bin" --disable-doc --disable-ffplay --disable-filter=resample --disable-rpath --disable-stripping \
+    --enable-amf --enable-avresample --enable-avisynth --enable-chromaprint --enable-frei0r --enable-gpl --enable-gnutls \
+    --enable-ladspa --enable-libaom --enable-libass --enable-libbluray --enable-libbs2b --enable-libcaca --enable-libcdio \
+    --enable-libcodec2 --enable-libdc1394 --enable-libdrm --enable-libflite --enable-libfontconfig --enable-libfreetype \
+    --enable-libfribidi --enable-libgme --enable-libgsm --enable-libiec61883 --enable-libjack --enable-libmp3lame \
+    --enable-libmysofa --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-libpulse --enable-librsvg \
+    --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libssh \
+    --enable-libtheora --enable-libtwolame --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libwavpack \
+    --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-libzmq --enable-libzvbi \
+    --enable-lv2 --enable-nvenc --enable-omx --enable-openal --enable-opengl --enable-sdl2 --enable-shared --enable-small \
+    --enable-vaapi --enable-vdpau --enable-version3  --extra-cflags="-I/usr/local/include" --extra-ldflags="-L/usr/local/lib" \
+    --extra-libs="-lpthread -lm" && \
+    make -j $(nproc) && \
+    make -j $(nproc) install && \
+    make distclean && \
+    cd /tmp && \
+    apt-get -y remove ${BUILD_PKGS} && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/*
+
+FROM ubuntu:focal
+
+COPY --from=build /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
+COPY --from=build /usr/local/bin/ffprobe /usr/local/bin/ffprobe
+COPY --from=build /usr/local/lib /usr/local/lib

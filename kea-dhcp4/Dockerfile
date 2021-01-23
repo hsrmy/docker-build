@@ -9,8 +9,15 @@ WORKDIR /tmp/kea
 RUN apk --update --no-cache add ${BUILD_PKGS} && \
     curl -fsSL https://downloads.isc.org/isc/kea/${VERSION}/kea-${VERSION}.tar.gz | tar -xz --strip-components=1 && \
     autoreconf --install && \
-    ./configure --prefix=/usr/local --sysconfdir=/etc --with-mysql --with-pgsql --disable-rpath --enable-static && \
-    make -j$(nproc) install
+    ./configure --prefix=/usr/local --sysconfdir=/etc --with-mysql --with-pgsql --disable-rpath --disable-static && \
+    make -j$(nproc) && \
+    make install DESTDIR=/tmp/build && \
+    strip -p /tmp/build/usr/local/sbin/kea-dhcp* /tmp/build/usr/local/sbin/kea-lfc* /tmp/build/usr/local/lib/libkea-*.so.* && \
+    ldconfig / && \
+    rm -rf /tmp/build/var/run /tmp/build/usr/local/share/man/* /tmp/build/usr/local/include /tmp/build/usr/include \
+    /tmp/build/usr/share/kea /tmp/build/usr/share/doc/kea /tmp/build/usr/local/lib/kea/hooks/*.la \
+    /tmp/build/usr/local/lib/*.la /tmp/build/usr/local/include/* /tmp/build/usr/local/share/doc/kea \
+    /tmp/build/usr/local/share/kea
 
 # 実際に動かすコンテナ
 FROM alpine:latest
@@ -29,10 +36,10 @@ RUN apk --update --no-cache add ${PKGS} && \
     tar -xz -C /usr/local/bin && \
     apk del tzdata curl
 ## 必要なファイルだけbuild用コンテナからコピー
-COPY --from=build /usr/local/lib /usr/local/lib
-COPY --from=build /usr/local/sbin/${BIN_NAME} /usr/local/sbin/
-COPY --from=build /usr/local/var /usr/local/var
-COPY --from=build /etc/kea/${BIN_NAME}.conf /etc/kea/
+COPY --from=build /tmp/build/usr/local/lib /usr/local/lib
+COPY --from=build /tmp/build/usr/local/sbin/${BIN_NAME} /usr/local/sbin/
+COPY --from=build /tmp/build/usr/local/var /usr/local/var
+COPY --from=build /tmp/build/etc/kea/${BIN_NAME}.conf /etc/kea/
 COPY ./entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 

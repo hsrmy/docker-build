@@ -3,13 +3,11 @@ FROM alpine:latest AS build
 ## kea dhcp serverのバージョン
 ARG VERSION=1.8.0
 ## buildに必要なパッケージ
-ARG BUILD_PKGS="wget make gcc g++ autoconf automake libtool boost-dev log4cplus-dev mysql-dev postgresql-dev"
+ARG BUILD_PKGS="curl make gcc g++ autoconf automake libtool boost-dev log4cplus-dev mysql-dev postgresql-dev"
 
+WORKDIR /tmp/kea
 RUN apk --update --no-cache add ${BUILD_PKGS} && \
-    cd /tmp && \
-    wget https://downloads.isc.org/isc/kea/${VERSION}/kea-${VERSION}.tar.gz && \
-    tar -xvf kea-${VERSION}.tar.gz && \
-    cd kea-${VERSION} && \
+    curl -fsSL https://downloads.isc.org/isc/kea/${VERSION}/kea-${VERSION}.tar.gz | tar -xz --strip-components=1 && \
     autoreconf --install && \
     ./configure --prefix=/usr/local --sysconfdir=/etc --with-mysql --with-pgsql --disable-rpath --disable-static && \
     make -j$(nproc) && \
@@ -17,9 +15,9 @@ RUN apk --update --no-cache add ${BUILD_PKGS} && \
     strip -p /tmp/build/usr/local/sbin/kea-dhcp* /tmp/build/usr/local/sbin/kea-lfc* /tmp/build/usr/local/lib/libkea-*.so.* && \
     ldconfig / && \
     rm -rf /tmp/build/var/run /tmp/build/usr/local/share/man/* /tmp/build/usr/local/include /tmp/build/usr/include \
-           /tmp/build/usr/share/kea /tmp/build/usr/share/doc/kea /tmp/build/usr/local/lib/kea/hooks/*.la \
-           /tmp/build/usr/local/lib/*.la /tmp/build/usr/local/include/* /tmp/build/usr/local/share/doc/kea \
-           /tmp/build/usr/local/share/kea
+    /tmp/build/usr/share/kea /tmp/build/usr/share/doc/kea /tmp/build/usr/local/lib/kea/hooks/*.la \
+    /tmp/build/usr/local/lib/*.la /tmp/build/usr/local/include/* /tmp/build/usr/local/share/doc/kea \
+    /tmp/build/usr/local/share/kea
 
 # 実際に動かすコンテナ
 FROM alpine:latest

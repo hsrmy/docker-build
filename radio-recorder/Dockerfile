@@ -1,5 +1,5 @@
 # ビルド用
-FROM golang:1.15-alpine AS build
+FROM golang:1.16.1-alpine AS build
 
 RUN apk --update --no-cache add git && \
     go get github.com/yyoshiki41/radigo/cmd/radigo

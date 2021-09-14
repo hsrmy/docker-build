@@ -3,7 +3,7 @@ FROM l3tnun/epgstation:master-debian
 ARG DOCKERIZE_VERSION="v0.6.1"
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends ca-certificates curl ffmpeg libva2 mesa-va-drivers vainfo tzdata && \
+    apt-get install -y --no-install-recommends ca-certificates curl tzdata && \
     curl -fsSL https://github.com/jwilder/dockerize/releases/download/${DOCKERIZE_VERSION}/dockerize-alpine-linux-amd64-${DOCKERIZE_VERSION}.tar.gz | \
     tar -xvz -C /usr/local/bin && \
     cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \

@@ -1,7 +1,5 @@
 FROM httpd:2.4.46-alpine
 
-COPY ./entrypoint.sh /
-
 RUN mkdir -p /var/lib/dav/data /var/www/html && \
     touch /var/lib/dav/DavLock && \
     chown -R www-data:www-data /var/lib/dav && \
@@ -16,8 +14,7 @@ RUN mkdir -p /var/lib/dav/data /var/www/html && \
     echo "Include conf/sites-enabled/*.conf" >> conf/httpd.conf && \
     mkdir -p conf/conf-available conf/sites-available && \
     ln -s conf-available conf/conf-enabled && \
-    ln -s sites-available conf/sites-enabled && \
-    chmod +x /entrypoint.sh
+    ln -s sites-available conf/sites-enabled
 RUN apk --update --no-cache add tzdata && \
     cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
     echo "Asia/Tokyo" > /etc/timezone && \
@@ -27,5 +24,4 @@ COPY conf/default.conf ./conf/sites-available/
 
 EXPOSE 80/tcp
 
-ENTRYPOINT ["/entrypoint.sh"]
 CMD ["httpd-foreground"]

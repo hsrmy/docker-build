@@ -1,7 +1,7 @@
 # build用コンテナ
 FROM debian:stable-slim AS build
 ## kea dhcp serverのバージョン
-ARG VERSION=2.0.1
+ARG VERSION=1.8.0
 ## buildに必要なパッケージ
 ARG BUILD_PKGS="curl make gcc g++ autoconf automake libtool libboost-system-dev liblog4cplus-dev libmariadb-dev-compat libpq-dev postgresql-server-dev-13 ca-certificates"
 
@@ -20,27 +20,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends ${BUILD_PKGS} &
     /tmp/build/usr/local/share/kea
 
 # 実際に動かすコンテナ
-# FROM alpine:latest
-# LABEL maintainer="hsrmy <hsrmy@emradc.xyz>"
+FROM debian:stable-slim
 ## 動かすのに必要なパッケージ
-# ARG PKGS="curl libstdc++ libgcc log4cplus mariadb-connector-c libpq openssl tzdata"
+ARG PKGS="curl tzdata ca-certificates libmariadb3 libpq5 liblog4cplus-2.0.5"
 ## 実行ファイル・設定ファイルに共通な部分
-# ARG BIN_NAME="kea-dhcp4"
+ARG BIN_NAME="kea-dhcp4"
 ## Dockerizeのバージョン
-# ARG DOCKERIZE_VERSION="v0.6.1"
+ARG DOCKERIZE_VERSION="v0.6.1"
 
-# RUN apk --update --no-cache add ${PKGS} && \
-#     cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
-#     echo "Asia/Tokyo" > /etc/timezone && \
-#     curl -fsSL https://github.com/jwilder/dockerize/releases/download/${DOCKERIZE_VERSION}/dockerize-alpine-linux-amd64-${DOCKERIZE_VERSION}.tar.gz | \
-#     tar -xz -C /usr/local/bin && \
-#     apk del tzdata curl
+RUN apt-get update && apt-get install -y --no-install-recommends ${PKGS} && \
+    cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
+    echo "Asia/Tokyo" > /etc/timezone && \
+    curl -fsSL https://github.com/jwilder/dockerize/releases/download/${DOCKERIZE_VERSION}/dockerize-alpine-linux-amd64-${DOCKERIZE_VERSION}.tar.gz | \
+    tar -xz -C /usr/local/bin
 ## 必要なファイルだけbuild用コンテナからコピー
-# COPY --from=build /tmp/build/usr/local/lib /usr/local/lib
-# COPY --from=build /tmp/build/usr/local/sbin/${BIN_NAME} /usr/local/sbin/
-# COPY --from=build /tmp/build/usr/local/var /usr/local/var
-# COPY --from=build /tmp/build/etc/kea/${BIN_NAME}.conf /etc/kea/
-# COPY ./entrypoint.sh /
-# RUN chmod +x /entrypoint.sh
+COPY --from=build /tmp/build/usr/local/lib /usr/local/lib
+COPY --from=build /tmp/build/usr/local/sbin/${BIN_NAME} /usr/local/sbin/
+COPY --from=build /tmp/build/usr/local/var /usr/local/var
+COPY --from=build /tmp/build/etc/kea/${BIN_NAME}.conf /etc/kea/
+COPY ./entrypoint.sh /
+RUN chmod +x /entrypoint.sh && ldconfig
 
-# EXPOSE 67/udp
+EXPOSE 67/udp

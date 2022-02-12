@@ -31,3 +31,8 @@ updates:
     - 1.16.0.pre.alpine
     - 1.16.1.pre.alpine
     - 1.16.2.pre.alpine
+- package-ecosystem: docker
+  directory: "/ip-notify"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10

@@ -1,4 +1,4 @@
-FROM golang:1.17-alpine
+FROM golang:1.18.1-alpine
 
 RUN apk --update --no-cache add git && \
     cd /go/src && \

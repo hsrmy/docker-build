@@ -5,7 +5,7 @@ RUN apk --update --no-cache add git && \
     go get github.com/yyoshiki41/radigo/cmd/radigo
 
 # 実際動かす用
-FROM python:3.9.7-alpine
+FROM python:3.11.1-alpine
 ENV TZ "Asia/Tokyo"
 
 RUN apk --update --no-cache add ffmpeg rtmpdump tzdata coreutils

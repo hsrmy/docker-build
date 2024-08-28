@@ -1,4 +1,4 @@
-FROM golang:1.20-alpine
+FROM golang:1.23-alpine
 
 RUN apk --update --no-cache add git && \
     cd /go/src && \

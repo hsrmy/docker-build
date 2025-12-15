@@ -116,12 +116,13 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ steps.image-name.outputs.name }}
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=latest
+          labels: |
+            org.opencontainers.image.title=${{ steps.image-name.outputs.name }}
+            org.opencontainers.image.url=https://github.com/${{ github.repository }}
+            org.opencontainers.image.created={{date 'YYYY-MM-DDTHH:mm:ssZ'}}
+            org.opencontainers.image.revision={{sha}}
+            org.opencontainers.image.vendor=${{ github.repository_owner }}
 
       - name: Build and push Docker image
         if: steps.check-dockerfile.outputs.exists == 'true'

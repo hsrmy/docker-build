@@ -1,4 +1,4 @@
-FROM golang:1.25-bookworm AS builder
+FROM golang:1.25-trixie AS builder
 RUN git clone https://github.com/mdlayher/apcupsd_exporter.git && \
     cd apcupsd_exporter && \
     go get -t -u && \

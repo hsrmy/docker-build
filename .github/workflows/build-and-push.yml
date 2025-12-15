@@ -1,0 +1,136 @@
+name: Build and Push Multi-arch Images
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed directories
+        id: changed-dirs
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          else
+            BASE_SHA="${{ github.event.before }}"
+            HEAD_SHA="${{ github.sha }}"
+          fi
+
+          # 初回pushの場合、HEADのみを対象にする
+          if [ "$BASE_SHA" == "0000000000000000000000000000000000000000" ] || [ -z "$BASE_SHA" ]; then
+            CHANGED_DIRS=$(find . -maxdepth 1 -type d -name "[!.]*" | sed 's|./||' | jq -R -s -c 'split("\n")[:-1]')
+          else
+            CHANGED_DIRS=$(git diff --name-only $BASE_SHA $HEAD_SHA | cut -d'/' -f1 | sort -u | grep -v '^\.github$' | jq -R -s -c 'split("\n")[:-1]')
+          fi
+
+          echo "changed_dirs=$CHANGED_DIRS" >> $GITHUB_OUTPUT
+
+      - name: Set matrix
+        id: set-matrix
+        run: |
+          # Dockerfileが存在するディレクトリのみをフィルタリング
+          ALL_DIRS='["apcupsd_exporter", "epgstation", "ip-notify", "kea-dhcp4", "kea-dhcp6", "keycloak", "mirakurun-exporter", "radio-recorder", "webdav"]'
+          CHANGED_DIRS='${{ steps.changed-dirs.outputs.changed_dirs }}'
+
+          # workflow_dispatchまたは変更がない場合は全ディレクトリをビルド
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ] || [ "$CHANGED_DIRS" == "[]" ] || [ -z "$CHANGED_DIRS" ]; then
+            MATRIX_DIRS=$ALL_DIRS
+          else
+            # 変更されたディレクトリのみをビルド
+            MATRIX_DIRS=$(echo "$ALL_DIRS" | jq -c --argjson changed "$CHANGED_DIRS" '[.[] | select(. as $dir | $changed | index($dir))]')
+          fi
+
+          # ディレクトリが空の場合はスキップ
+          if [ "$MATRIX_DIRS" == "[]" ]; then
+            echo "matrix={\"include\":[]}" >> $GITHUB_OUTPUT
+          else
+            echo "matrix={\"directory\":$MATRIX_DIRS}" >> $GITHUB_OUTPUT
+          fi
+
+  build-and-push:
+    needs: prepare
+    if: needs.prepare.outputs.matrix != '{"include":[]}'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
+      fail-fast: false
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check if Dockerfile exists
+        id: check-dockerfile
+        run: |
+          if [ -f "${{ matrix.directory }}/Dockerfile" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate image name
+        id: image-name
+        run: |
+          IMAGE_NAME=$(echo "${{ matrix.directory }}" | tr '_' '-')
+          echo "name=$IMAGE_NAME" >> $GITHUB_OUTPUT
+
+      - name: Set up QEMU
+        if: steps.check-dockerfile.outputs.exists == 'true'
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        if: steps.check-dockerfile.outputs.exists == 'true'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        if: steps.check-dockerfile.outputs.exists == 'true' && github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels)
+        if: steps.check-dockerfile.outputs.exists == 'true'
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ steps.image-name.outputs.name }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        if: steps.check-dockerfile.outputs.exists == 'true'
+        uses: docker/build-push-action@v5
+        with:
+          context: ./${{ matrix.directory }}
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.directory }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.directory }}

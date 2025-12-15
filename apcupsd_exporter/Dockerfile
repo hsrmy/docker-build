@@ -1,11 +1,11 @@
-FROM golang:1.23-bookworm as builder
+FROM golang:1.25-bookworm AS builder
 RUN git clone https://github.com/mdlayher/apcupsd_exporter.git && \
     cd apcupsd_exporter && \
     go get -t -u && \
     go build -o /go/bin/apcupsd_exporter cmd/apcupsd_exporter/main.go
 
-FROM debian:bookworm-slim
-LABEL org.opencontainers.image.source https://github.com/hsrmy/docker-build
+FROM debian:trixie-slim
+LABEL org.opencontainers.image.source=https://github.com/hsrmy/docker-build
 LABEL org.opencontainers.image.description="Provides a Prometheus exporter for the apcupsd Network Information Server (NIS)."
 LABEL org.opencontainers.image.licenses=MIT
 RUN apt-get update && \

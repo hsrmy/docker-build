@@ -143,5 +143,6 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.filter-labels.outputs.labels }}
+          provenance: false
           cache-from: type=gha,scope=${{ matrix.directory }}
           cache-to: type=gha,mode=max,scope=${{ matrix.directory }}

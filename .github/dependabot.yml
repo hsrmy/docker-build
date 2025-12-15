@@ -1,6 +1,11 @@
 version: 2
 updates:
 - package-ecosystem: docker
+  directory: "/apcupsd_exporter"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+- package-ecosystem: docker
   directory: "/epgstation"
   schedule:
     interval: daily

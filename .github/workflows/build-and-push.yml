@@ -161,6 +161,18 @@ jobs:
           echo "$FILTERED_LABELS" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+      - name: Extract description from Dockerfile
+        if: steps.check-dockerfile.outputs.exists == 'true'
+        id: extract-description
+        run: |
+          DESCRIPTION=$(grep 'org\.opencontainers\.image\.description=' ${{ matrix.directory }}/Dockerfile | sed 's/.*org\.opencontainers\.image\.description="\(.*\)"/\1/' || echo "")
+          if [ -n "$DESCRIPTION" ]; then
+            echo "description=$DESCRIPTION" >> $GITHUB_OUTPUT
+            echo "has_description=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_description=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build and push Docker image
         if: steps.check-dockerfile.outputs.exists == 'true'
         uses: docker/build-push-action@v5
@@ -170,6 +182,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.filter-labels.outputs.labels }}
+          annotations: ${{ steps.extract-description.outputs.has_description == 'true' && format('index:org.opencontainers.image.description={0}', steps.extract-description.outputs.description) || '' }}
           provenance: false
           cache-from: type=gha,scope=${{ matrix.directory }}
           cache-to: type=gha,mode=max,scope=${{ matrix.directory }}

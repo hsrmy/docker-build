@@ -109,32 +109,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Generate date-based tag
-        if: steps.check-dockerfile.outputs.exists == 'true' && github.event_name != 'pull_request'
-        id: date-tag
-        run: |
-          DATE_TAG=$(TZ=Asia/Tokyo date +%Y%m%d)
-          IMAGE_PATH="${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ steps.image-name.outputs.name }}"
-
-          # GitHub Container Registryから既存のタグを取得
-          TOKEN=$(echo ${{ secrets.GITHUB_TOKEN }} | base64)
-          TAGS_JSON=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            "https://ghcr.io/v2/${{ github.repository_owner }}/${{ steps.image-name.outputs.name }}/tags/list" || echo '{"tags":[]}')
-
-          # その日のタグから最大番号を取得
-          MAX_BUILD=$(echo "$TAGS_JSON" | jq -r '.tags[]?' | grep "^${DATE_TAG}-" | sed "s/${DATE_TAG}-//" | sort -n | tail -1)
-
-          # 次のビルド番号を計算
-          if [ -z "$MAX_BUILD" ] || [ "$MAX_BUILD" = "null" ]; then
-            BUILD_NUMBER=1
-          else
-            BUILD_NUMBER=$((MAX_BUILD + 1))
-          fi
-
-          FINAL_TAG="${DATE_TAG}-${BUILD_NUMBER}"
-          echo "tag=$FINAL_TAG" >> $GITHUB_OUTPUT
-          echo "Generated tag: $FINAL_TAG"
-
       - name: Extract metadata (tags, labels)
         if: steps.check-dockerfile.outputs.exists == 'true'
         id: meta
@@ -143,7 +117,6 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ steps.image-name.outputs.name }}
           tags: |
             type=raw,value=latest
-            type=raw,value=${{ steps.date-tag.outputs.tag }},enable=${{ github.event_name != 'pull_request' }}
           labels: |
             org.opencontainers.image.title=${{ steps.image-name.outputs.name }}
             org.opencontainers.image.url=https://github.com/${{ github.repository }}
